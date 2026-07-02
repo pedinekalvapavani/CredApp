@@ -10,7 +10,7 @@ pool:
 
 variables:
   acrServiceConnection: credsc
-  tags: '$(Build.BuildId)'
+  tag: '$(Build.BuildId)'
   frontendrepo: 'Credapp/Frontend'
   paymentrepo: 'Credapp/Payment'
   userrepo: 'Credapp/User'
@@ -24,13 +24,28 @@ stages:
         steps:
           - checkout: self
           - task: Docker@2
-            displayName: Build and push frontend service docker images
+            displayName: Build and push frontend-service docker images
             inputs:
               containerRegistry: 'credsc'
               repository: '$(frontendrepo)'
               command: 'buildAndPush'
               Dockerfile: 'frontend-react/Dockerfile'
-              
+              buildContext: frontend-react
+              tags: |
+                $(tag)
+                latest
+
+          - task: Docker@2
+            displayName: Build and push payment-service docker images
+            inputs:
+              containerRegistry: 'credsc'
+              repository: '$(paymentrepo)'
+              command: 'buildAndPush'
+              Dockerfile: 'payment-service/Dockerfile'
+              buildContext: payment-service
+              tags: |
+                $(tag)
+                latest  
 
 
 
